@@ -1,0 +1,29 @@
+FROM golang:1.20.0-bullseye AS build-env
+
+WORKDIR /go/src/github.com/medibloc/
+
+RUN git clone "https://github.com/medibloc/panacea-core.git"
+
+WORKDIR /go/src/github.com/medibloc/panacea-core
+
+RUN apt-get update -y
+
+RUN make clean build
+
+FROM golang:1.20.0-bullseye
+
+RUN apt-get update \
+&& apt-get clean \
+
+WORKDIR /go/src/github.com/medibloc/panacea-core
+
+COPY ./init_panacea.sh .
+
+# perms to make init-node.sh executable
+RUN chmod +x init_panacea.sh
+
+COPY --from=build-env /go/src/github.com/medibloc/panacea-core/build/panacead /usr/bin/panacead
+
+EXPOSE 26656 26657 1317 9090 8545 8546
+
+CMD ["sh", "./init_panacea.sh"]
