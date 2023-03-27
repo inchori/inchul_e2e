@@ -1,0 +1,119 @@
+# This is a TOML config file.
+# For more information, see https://github.com/toml-lang/toml
+
+###############################################################################
+###                           Base Configuration                            ###
+###############################################################################
+
+log-level = "info"
+oracle-mnemonic = "__ORACLE_MNEMONIC__"
+oracle-acc-num = "0"
+oracle-acc-index = "0"
+data-dir = "data"
+
+oracle-priv-key-file = "oracle_priv_key.sealed"
+oracle-pub-key-file = "oracle_pub_key.json"
+node-priv-key-file = "node_priv_key.sealed"
+
+###############################################################################
+###                         Panacea Configuration                           ###
+###############################################################################
+
+[panacea]
+
+chain-id = "__CHAIN_ID__"
+grpc-addr = "tcp://__PANACEA_HOST__:9090"
+rpc-addr = "tcp://__PANACEA_HOST__:26657"
+default-gas-limit = "400000"
+default-fee-amount = "2000000umed"
+
+# A primary RPC address for light client verification
+
+light-client-primary-addr = "tcp://__PANACEA_HOST__:26657"
+
+# Witness addresses (comma-separated) for light client verification
+
+light-client-witness-addrs= "tcp://__PANACEA_HOST__:26657"
+
+# Log level for light client
+
+light-client-log-level = "error"
+
+###############################################################################
+###                         GRPC Configuration                           ###
+###############################################################################
+
+[grpc]
+# TCP or UNIX socket address for the gRPC server to listen on
+listen-addr = "__PANACEA_HOST__:9090"
+
+# Timeout for connection establishment for all new connections.
+connection-timeout = "2m0s"
+
+# Maximum number of simultaneous connections that the gRPC server can handle
+max-connections = "50"
+
+# Maximum number of concurrent streams that each gRPC connection can handle
+max-concurrent-streams = "0"
+
+# Max message size in bytes the server can receive.
+max-recv-msg-size = "1048576"
+
+# Duration for the amount of time after which an idle connection would be closed by sending a GoAway.
+# Idleness duration is defined since the most recent time the number of outstanding RPCs became zero or the connection establishment.
+keepalive-max-connection-idle = "0s"
+
+# Duration for the maximum amount of time a connection may exist before it will be closed by sending a GoAway.
+keepalive-max-connection-age = "0s"
+
+# Additive period after keepalive-max-connection-age after which the connection will be forcibly closed.
+keepalive-max-connection-age-grace = "0s"
+
+# After a duration of this time if the server doesn't see any activity it pings the client to see if the transport is still alive.
+keepalive-time = "2h0m0s"
+
+# After having pinged for keepalive check, the server waits for a duration of Timeout and if no activity is seen even after that the connection is closed.
+keepalive-timeout = "20s"
+
+# Max throughput per second that the server can handle.
+# If the throughput per second is exceeded, the request is blocked for up to 'rate-limit-wait-timeout'. If the request is not processed after that, an error is returned to the client.
+rate-limits = "100"
+
+# Timeout to wait if a request is blocked due to rate limiting.
+rate-limit-wait-timeout = "5s"
+
+###############################################################################
+###                           API Configuration                             ###
+###############################################################################
+
+[api]
+
+# Enable the REST API server (gRPC gateway)
+enabled = "true"
+
+# TCP or UNIX socket address for the API server to listen on
+listen-addr = "__PANACEA_HOST__:8080"
+
+# Timeout for the API server to establish connections with the underlying gRPC server
+grpc-connect-timeout = "10s"
+
+# Maximum duration before timing out writes of the response.
+write-timeout = "1m0s"
+
+# Maximum duration for reading the entire request, including the body.
+read-timeout = "15s"
+
+# Maximum number of simultaneous connections that the API server can handle
+max-connections = "50"
+
+# Max request body size in bytes the server can receive.
+max-request-body-size = "1048576"
+
+###############################################################################
+###                          Consumer Configuration                         ###
+###############################################################################
+
+[consumer]
+
+# Maximum duration to transfer files to a consumer service
+timeout = "5s"
