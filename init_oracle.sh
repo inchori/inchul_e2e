@@ -1,12 +1,25 @@
 #!/bin/bash
 
-CONFIG_PATH="/home_mnt/.oracle"
+SCRIPT_DIR=$(cd `dirname $0` && pwd)
 
-rm -rf ~/.${CONFIG_PATH}
-ego run oracled init
+rm -rf /oracle/.oracle
+unset SGX_AESM_ADDR
+OE_SIMULATION=1 ego run /usr/bin/oracled init
 
-cat ${CONFIG_PATH}/config.toml | \
+#CHAIN_ID="testing"
+#ORACLE_MNEMONIC="gasp shy describe man hello blossom motor monkey seven mule shallow almost bunker hello wife clarify tissue best actress hub wisdom crane ridge heavy"
+#PANACEA_HOST="127.0.0.1"
+
+echo $CHAIN_ID
+echo $ORACLE_MNEMONIC
+echo $PANACEA_HOST
+
+cat ${SCRIPT_DIR}/config.toml | \
   sed "s|__CHAIN_ID__|${CHAIN_ID}|g" | \
   sed "s|__ORACLE_MNEMONIC__|${ORACLE_MNEMONIC}|g" | \
-  sed "s|__PANACEA_HOST__|${PANANCE_HOST}|g" \
-  > ~/.${CONFIG_PATH}/config.toml
+  sed "s|__PANACEA_HOST__|${PANACEA_HOST}|g" \
+  > /oracle/.oracle/config.toml
+
+cat /oracle/.oracle/config.toml
+
+sleep time

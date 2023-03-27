@@ -31,6 +31,8 @@ FROM ego-base AS build
 # Install prerequisites
 RUN apt-get update && apt-get install -y --no-install-recommends git build-essential
 
+WORKDIR /go/src/github.com/medibloc
+
 RUN git clone "https://github.com/medibloc/panacea-oracle.git"
 
 # Build oracled
@@ -40,15 +42,19 @@ RUN make build
 
 RUN ego sign ./scripts/enclave-prod.json
 
-COPY ./init_oracle.sh .
-
-RUN chmod +x init_oracle.sh
-
 ####################################################
 
 FROM ego-base
 
+WORKDIR /go/src/github.com/medibloc/panacea-oracle
+
+COPY ./init_oracle.sh .
+COPY ./config.toml .
+
+RUN chmod +x init_oracle.sh
+
 COPY --from=build /go/src/github.com/medibloc/panacea-oracle/build/oracled /usr/bin/oracled
+
 RUN chmod +x /usr/bin/oracled
 
 EXPOSE 8080 9090
