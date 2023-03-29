@@ -10,9 +10,6 @@ OE_SIMULATION=1 ego run /usr/bin/oracled init
 #ORACLE_MNEMONIC="gasp shy describe man hello blossom motor monkey seven mule shallow almost bunker hello wife clarify tissue best actress hub wisdom crane ridge heavy"
 #PANACEA_HOST="127.0.0.1"
 
-echo $CHAIN_ID
-echo $ORACLE_MNEMONIC
-echo $PANACEA_HOST
 
 cat ${SCRIPT_DIR}/config.toml | \
   sed "s|__CHAIN_ID__|${CHAIN_ID}|g" | \
