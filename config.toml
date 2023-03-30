@@ -22,18 +22,18 @@ node-priv-key-file = "node_priv_key.sealed"
 [panacea]
 
 chain-id = "__CHAIN_ID__"
-grpc-addr = "tcp://__PANACEA_HOST__:9090"
-rpc-addr = "tcp://__PANACEA_HOST__:26657"
+grpc-addr = "tcp://panacea:9090"
+rpc-addr = "tcp://panacea:26657"
 default-gas-limit = "400000"
 default-fee-amount = "2000000umed"
 
 # A primary RPC address for light client verification
 
-light-client-primary-addr = "tcp://__PANACEA_HOST__:26657"
+light-client-primary-addr = "tcp://panacea:26657"
 
 # Witness addresses (comma-separated) for light client verification
 
-light-client-witness-addrs= "tcp://__PANACEA_HOST__:26657"
+light-client-witness-addrs= "tcp://panacea:26657"
 
 # Log level for light client
 
@@ -45,7 +45,7 @@ light-client-log-level = "error"
 
 [grpc]
 # TCP or UNIX socket address for the gRPC server to listen on
-listen-addr = "__PANACEA_HOST__:9090"
+listen-addr = "127.0.0.1:9090"
 
 # Timeout for connection establishment for all new connections.
 connection-timeout = "2m0s"
@@ -92,7 +92,7 @@ rate-limit-wait-timeout = "5s"
 enabled = "true"
 
 # TCP or UNIX socket address for the API server to listen on
-listen-addr = "__PANACEA_HOST__:8080"
+listen-addr = "127.0.0.1:8080"
 
 # Timeout for the API server to establish connections with the underlying gRPC server
 grpc-connect-timeout = "10s"

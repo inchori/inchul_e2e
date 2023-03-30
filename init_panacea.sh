@@ -11,10 +11,10 @@ panacead keys add validator
 panacead add-genesis-account $(panacead keys show validator -a) 1000000000000umed
 panacead gentx validator 1000000umed --commission-rate 0.1 --commission-max-rate 0.2 --commission-max-change-rate 0.01 --min-self-delegation 1 --chain-id ${CHAIN_ID}
 
-echo -e "${E2E_DATA_BUYER_MNEMONIC}\n\n" | panacead keys add buyer -i
+printf "%s\n\n" "${E2E_DATA_BUYER_MNEMONIC}" | panacead keys add buyer -i
 panacead add-genesis-account $(panacead keys show buyer -a) 100000000000umed
 
-echo -e "${E2E_ORACLE_MNEMONIC}\n\n" | panacead keys add oracle -i
+printf "%s\n\n" "${E2E_ORACLE_MNEMONIC}" | panacead keys add oracle -i
 panacead add-genesis-account $(panacead keys show oracle -a) 100000000000umed
 
 panacead collect-gentxs

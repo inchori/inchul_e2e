@@ -7,11 +7,14 @@ import (
 	"net/url"
 	"os"
 	"testing"
+	"time"
 
+	"github.com/cosmos/cosmos-sdk/codec/legacy"
 	"github.com/cosmos/go-bip39"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
 	"github.com/stretchr/testify/require"
+	ctypes "github.com/tendermint/tendermint/rpc/core/types"
 )
 
 func TestDocker(t *testing.T) {
@@ -47,19 +50,58 @@ func TestDocker(t *testing.T) {
 			fmt.Sprintf("E2E_DATA_BUYER_MNEMONIC=%s", buyerMnemonic),
 			fmt.Sprintf("E2E_ORACLE_MNEMONIC=%s", oracleMnemonic),
 		},
+		Hostname: "panacea",
 	}
 
 	panacea, err := pool.RunWithOptions(runOpts, func(config *docker.HostConfig) {
 		config.AutoRemove = true
 	})
 
-	cmd := []string{"echo", "$E2E_DATA_BUYER_MNEMONIC"}
-	var stdout4 bytes.Buffer
-	exitCode, err := panacea.Exec(cmd, dockertest.ExecOptions{StdOut: &stdout4})
-	require.NoError(t, err)
-	require.Zero(t, exitCode)
-	fmt.Println(stdout4.String())
+	time.Sleep(30 * time.Second)
 
+	cmd := []string{"panacead", "q", "block", "1"}
+	var stdout2 bytes.Buffer
+	exitCode1, err := panacea.Exec(cmd, dockertest.ExecOptions{StdOut: &stdout2})
+	require.NoError(t, err)
+	require.Zero(t, exitCode1)
+
+	var resultBlock ctypes.ResultBlock
+	err = legacy.Cdc.UnmarshalJSON(stdout2.Bytes(), &resultBlock)
+	require.NoError(t, err)
+	fmt.Println(resultBlock.BlockID.Hash.String())
+
+	oracleBuildOpts := docker.BuildImageOptions{
+		Dockerfile:   "./oracle.DockerFile",
+		ContextDir:   ".",
+		NoCache:      true,
+		OutputStream: io.Discard,
+		ErrorStream:  os.Stdout,
+		Name:         fmt.Sprintf("%s:%s", "oracle_init", "0.1"),
+	}
+	err = pool.Client.BuildImage(oracleBuildOpts)
+	require.NoError(t, err)
+
+	oracleRunOpts := &dockertest.RunOptions{
+		Repository: "oracle_init",
+		Tag:        "0.1",
+		Name:       "oracle_dep_e2e",
+		Env: []string{
+			fmt.Sprintf("CHAIN_ID=%s", "testing"),
+			fmt.Sprintf("ORACLE_MNEMONIC=%s", oracleMnemonic),
+			fmt.Sprintf("TRUSTED_BLOCK_HASH=%s", resultBlock.BlockID.Hash.String()),
+		},
+	}
+
+	oracle, err := pool.RunWithOptions(oracleRunOpts, func(config *docker.HostConfig) {
+		config.AutoRemove = true
+	})
+
+	cmd4 := []string{"cat", "/oracle/.oracle/oracle_pub_key.json"}
+	var stdout bytes.Buffer
+	exitCode, err := oracle.Exec(cmd4, dockertest.ExecOptions{StdOut: &stdout})
+	require.Zero(t, exitCode)
+	require.NoError(t, err)
+	fmt.Println(stdout.String())
 }
 
 func getHostPort(resource *dockertest.Resource, id string) string {
@@ -71,5 +113,6 @@ func getHostPort(resource *dockertest.Resource, id string) string {
 	if err != nil {
 		panic(err)
 	}
-	return u.Hostname()
+
+	return u.Hostname() + ":" + resource.GetPort(id)
 }

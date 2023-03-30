@@ -1,14 +1,9 @@
-FROM golang:1.20.0-bullseye AS build-env
-
-RUN apt-get update -y
-
 FROM ghcr.io/medibloc/panacea-core:main AS panacea
 
 COPY ./init_panacea.sh .
 
 RUN chmod +x ./init_panacea.sh
 
-EXPOSE 26656 26657 1317 9090 8545 8546
+EXPOSE 8545
 
 CMD ["sh", "./init_panacea.sh"]
-
